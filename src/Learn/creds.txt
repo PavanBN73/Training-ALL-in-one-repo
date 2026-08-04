@@ -1,0 +1,18 @@
+MYSQL Login Details
+===============================
+Username: root
+Password: pass@word1
+
+Jenkins Login Details
+================================
+
+URL	: http://localhost:8080/
+Username: admin
+Password: 4e739d8219744becbd4f27ca4eae51b2
+
+Grafana Login Details
+================================
+
+URL	: http://localhost:3000/
+Username: admin
+Password: admin1
