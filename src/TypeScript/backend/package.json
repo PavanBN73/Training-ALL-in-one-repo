@@ -4,15 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "test": "nodemon src/index.ts"
+    "dev": "node dist/index.js",
+    "test": "nodemon dist/index.js",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.2",
