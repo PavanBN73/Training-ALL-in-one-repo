@@ -81,19 +81,18 @@ export class LoginComponent {
             const username = this.loginForm.value.username;
             const password = this.loginForm.value.password;
 
-            // Static authentication
             if (
                 username === 'pavan' &&
                 password === '12345678'
             ) {
 
-                console.log('Login successful');
+                localStorage.setItem("isLoggedIn", "true");
 
                 this.router.navigate(['/transaction']);
 
             } else {
 
-                alert('Invalid username or password');
+                alert("Invalid username or password");
 
             }
         }

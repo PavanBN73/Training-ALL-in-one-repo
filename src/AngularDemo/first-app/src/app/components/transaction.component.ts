@@ -17,13 +17,14 @@ import { sameAccountValidator }
 
 import { AccountMaskPipe }
     from "../pipes/account-mask.pipe";
+import { SharedModule } from "../shared/shared.module";
 
 @Component({
     selector: "app-transaction",
     standalone: true,
     imports: [
         ReactiveFormsModule,
-        AccountMaskPipe
+        SharedModule
     ],
     template: `
     <h1>Fund Transfer</h1>
