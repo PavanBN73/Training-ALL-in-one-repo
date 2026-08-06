@@ -6,120 +6,119 @@ import {
     Validators
 } from "@angular/forms";
 
-import { FundTransferService } from "../services/fundTransfer.service";
+import { FundTransferService }
+    from "../services/fundTransfer.service";
 
 import { minimumAmountValidator }
-from "../validators/minimum-amount.validator";
+    from "../validators/minimum-amount.validator";
 
 import { sameAccountValidator }
-from "../validators/same-account.validator";
+    from "../validators/same-account.validator";
+
+import { AccountMaskPipe }
+    from "../pipes/account-mask.pipe";
 
 @Component({
     selector: "app-transaction",
     standalone: true,
-    imports: [ReactiveFormsModule],
+    imports: [
+        ReactiveFormsModule,
+        AccountMaskPipe
+    ],
     template: `
+    <h1>Fund Transfer</h1>
 
-        <h1>Fund Transfer</h1>
+    <h2>
+      {{ accountNumber | accountMask }}
+    </h2>
 
-        <h2>Balance : {{balance}}</h2>
+    <form
+      [formGroup]="transferForm"
+      (ngSubmit)="transfer()">
 
-        <form
-            [formGroup]="transferForm"
-            (ngSubmit)="transfer()">
+      <div>
+        From Account :
+        <input formControlName="fromAccount">
+      </div>
 
-            <div>
-                From Account :
-                <input
-                    formControlName="fromAccount">
-            </div>
+      <br>
 
-            <br>
+      <div>
+        To Account :
+        <input formControlName="toAccount">
+      </div>
 
-            <div>
-                To Account :
-                <input
-                    formControlName="toAccount">
-            </div>
+      <br>
 
-            <br>
+      <div>
+        Amount :
+        <input
+          type="number"
+          formControlName="amount">
+      </div>
 
-            <div>
-                Amount :
-                <input
-                    type="number"
-                    formControlName="amount">
-            </div>
+      @if(
+        transferForm.get('amount')
+        ?.errors?.['minimumAmount']
+      ){
+        <p>
+          Minimum amount should be ₹100
+        </p>
+      }
 
-            @if(
-              transferForm.get('amount')
-              ?.errors?.['minimumAmount']
-            ){
-                <p>
-                    Minimum amount should be ₹100
-                </p>
-            }
+      @if(
+        transferForm.errors?.['sameAccount']
+      ){
+        <p>
+          Source and destination account
+          cannot be same
+        </p>
+      }
 
-            @if(
-              transferForm.errors?.['sameAccount']
-            ){
-                <p>
-                    Source and destination
-                    account cannot be same
-                </p>
-            }
+      <br>
 
-            <br>
+      <button
+        type="submit"
+        [disabled]="transferForm.invalid">
 
-            <button
-                type="submit"
-                [disabled]="transferForm.invalid">
+        Transfer
 
-                Transfer
+      </button>
 
-            </button>
+    </form>
 
-        </form>
-
-        <p>{{message}}</p>
-    `
+    <p>{{message}}</p>
+  `
 })
 export class Transaction {
 
-    fundTransferService: FundTransferService;
+    accountNumber = "1234567890";
 
-    balance: number;
-
-    message = '';
+    message = "";
 
     constructor(
-        fundTransferService: FundTransferService
-    ) {
-
-        this.fundTransferService =
-            fundTransferService;
-
-        this.balance =
-            this.fundTransferService.getBalance();
-    }
+        private fundTransferService: FundTransferService
+    ) { }
 
     transferForm = new FormGroup({
 
-        fromAccount:
-            new FormControl('', [
-                Validators.required
-            ]),
+        fromAccount: new FormControl(
+            "",
+            [Validators.required]
+        ),
 
-        toAccount:
-            new FormControl('', [
-                Validators.required
-            ]),
+        toAccount: new FormControl(
+            "",
+            [Validators.required]
+        ),
 
-        amount:
-            new FormControl(0, [
+        amount: new FormControl(
+            0,
+            [
                 Validators.required,
                 minimumAmountValidator
-            ])
+            ]
+        )
 
     }, {
         validators: sameAccountValidator
@@ -130,14 +129,27 @@ export class Transaction {
         const value =
             this.transferForm.value;
 
-        this.message =
-            this.fundTransferService.transferFunds(
+        this.fundTransferService
+            .transferFunds(
                 value.fromAccount!,
                 value.toAccount!,
                 Number(value.amount)
-            );
+            )
+            .subscribe({
 
-        this.balance =
-            this.fundTransferService.getBalance();
+                next: () => {
+
+                    this.message =
+                        `₹${value.amount} transferred successfully`;
+
+                    this.transferForm.reset();
+                },
+
+                error: () => {
+
+                    this.message =
+                        "Transfer Failed";
+                }
+            });
     }
 }
