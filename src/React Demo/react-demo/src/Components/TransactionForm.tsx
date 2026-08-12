@@ -1,9 +1,10 @@
 
-import React, { useState, useRef, useLayoutEffect, useTransition, useId } from "react";
-import { useTransactions } from "../contexts/TransactionContext";
+import { useState, useRef, useLayoutEffect, useTransition, useId } from "react";
+import { useDispatch } from "react-redux";
+import { addTransaction } from "../store";
 
 export default function TransactionForm() {
-    const { addTransaction } = useTransactions();
+    const dispatch = useDispatch();
     const [title, setTitle] = useState("");
     const [amount, setAmount] = useState<number | string>("");
     const [type, setType] = useState<"deposite" | "withdraw">("deposite");
@@ -31,7 +32,10 @@ export default function TransactionForm() {
 
         const formattedAmount = type === "deposite" ? `+ ${numericAmount}` : `- ${numericAmount}`;
 
-        startTransition(() => addTransaction({ title, amount: formattedAmount, type }));
+        startTransition(() => {
+            dispatch(addTransaction({ title, amount: formattedAmount, type }));
+            return undefined;
+        });
 
         setTitle("");
         setAmount("");

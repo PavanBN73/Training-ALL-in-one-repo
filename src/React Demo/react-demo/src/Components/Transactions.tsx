@@ -1,5 +1,6 @@
-import React, { useDeferredValue, useEffect, useMemo } from "react";
-import { useTransactions } from "../contexts/TransactionContext";
+import { useDeferredValue, useEffect, useMemo } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store";
 
 const DepositTransaction = ({ title, amount }: { title: string; amount: string }) => (
     <div className="transaction deposit">
@@ -16,7 +17,7 @@ const WithdrawTransaction = ({ title, amount }: { title: string; amount: string 
 );
 
 export default function Transactions() {
-    const { transactions } = useTransactions();
+    const transactions = useSelector((s: RootState) => s.transactions);
 
     // Update document title when transaction count changes
     useEffect(() => {
