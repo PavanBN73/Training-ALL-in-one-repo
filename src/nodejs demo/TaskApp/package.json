@@ -1,0 +1,29 @@
+{
+  "name": "task-app",
+  "version": "1.0.0",
+  "description": "Task management app with User authentication",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest --detectOpenHandles --forceExit"
+  },
+  "keywords": [
+    "task",
+    "mongodb",
+    "nodejs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^6.3.3"
+  }
+}

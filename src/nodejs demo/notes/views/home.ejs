@@ -1,0 +1,241 @@
+<!-- ====================================
+     NOTE KEEPER APP - TEMPLATE FILE (home.ejs)
+     ====================================
+     This is an EJS (Embedded JavaScript) template file.
+     It displays the user interface for the Note Keeper application.
+     EJS allows us to embed JavaScript code within HTML using <%= %> tags.
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>Note Keeper</title>
+   <!-- Basic HTML page title that appears in browser tab -->
+   <style>
+      /* Simple CSS styling for better layout */
+      body {
+         font-family: Arial, sans-serif;
+         padding: 20px;
+         background-color: #f5f5f5;
+      }
+      
+      h1 {
+         color: #333;
+      }
+      
+      .notes-container {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 10px;
+         margin: 20px 0;
+      }
+      
+      .note-card {
+         background-color: white;
+         border: 1px solid #ddd;
+         border-radius: 5px;
+         padding: 10px;
+         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      
+      form {
+         display: flex;
+         flex-direction: column;
+         gap: 5px;
+      }
+      
+      textarea {
+         padding: 8px;
+         font-family: Arial, sans-serif;
+         resize: none;
+      }
+      
+      button {
+         padding: 8px 12px;
+         background-color: #4CAF50;
+         color: white;
+         border: none;
+         border-radius: 4px;
+         cursor: pointer;
+      }
+      
+      button:hover {
+         background-color: #45a049;
+      }
+      
+      .delete-btn {
+         background-color: #f44336;
+         padding: 8px;
+         width: 30px;
+         margin: 0px 4px;
+      }
+      
+      .delete-btn:hover {
+         background-color: #da190b;
+      }
+      
+      .update-delete-row {
+         display: flex;
+         gap: 5px;
+      }
+   </style>
+</head>
+
+<body>
+   <!-- ====================================
+        MAIN HEADING
+        ==================================== -->
+   <h1>Note Keeper</h1>
+   <!-- Page title -->
+
+   <!-- ====================================
+        DISPLAY EXISTING NOTES SECTION
+        ====================================
+        This section displays all saved notes in a grid layout.
+        The <% %> tags contain JavaScript code that runs on the server.
+        The <%= %> tags display the result in the HTML.
+   -->
+   <h2>Your Notes</h2>
+   
+   <!-- Flex container to display notes in a grid layout -->
+   <div class="notes-container" style="display: flex;">
+      
+      <!-- ====================================
+           LOOP THROUGH EACH NOTE
+           ====================================
+           data.forEach() iterates through each note in the notes array
+           'element' represents the current note in each iteration
+           Each note object contains: noteId and noteContent
+      -->
+      <% data.forEach(element=> { %>
+         
+         <!-- ====================================
+              UPDATE NOTE FORM
+              ====================================
+              Form to update an existing note
+              action="/update" - sends data to the /update route in app.js
+              method="post" - sends data in POST request
+         -->
+         <div class="note-card">
+            <form action="/update" method="post">
+               
+               <!-- ====================================
+                    HIDDEN INPUT - NOTE ID
+                    ====================================
+                    This hidden input stores the noteId
+                    style="display: none;" hides it from the user
+                    The noteId is needed to identify which note to update
+                    value="<%= element.noteId %>" inserts the actual noteId from the data
+               -->
+               <input type="number" style="display: none;"
+                      name="noteId" value="<%= element.noteId %>">
+               
+               <!-- ====================================
+                    TEXTAREA - NOTE CONTENT
+                    ====================================
+                    Textarea where user can edit the note content
+                    name="noteContent" - field name sent to server
+                    rows="6" cols="30" - size of textarea
+                    placeholder="Type Here..." - hint text shown when empty
+                    value="<%= element.noteContent %>" - pre-fills with current content
+                    The content between opening/closing tags also displays the note text
+               -->
+               <textarea type="text" rows="6" cols="30"
+                         placeholder="Type Here..." name="noteContent">
+                     <%= element.noteContent %>
+               </textarea>
+               
+               <!-- Update button to submit the form -->
+               <button type="submit">Update</button>
+            </form>
+            
+            <!-- ====================================
+                 DELETE NOTE FORM
+                 ====================================
+                 Separate form to delete a note
+                 action="/delete" - sends data to the /delete route in app.js
+            -->
+            <form action="/delete" method="post">
+               
+               <!-- Hidden input to pass the noteId for deletion -->
+               <input type="number" style="display: none;"
+                      name="noteId" value="<%= element.noteId %>">
+               
+               <!-- Delete button with X symbol (&#10005 is HTML entity for multiplication sign) -->
+               <button type="submit" class="delete-btn"
+                       style="margin: 0px 4px;">&#10005</button>
+            </form>
+         </div>
+         
+         <!-- END OF LOOP - Goes back and repeats for next note -->
+         <% }) %>
+
+   </div>
+
+   <!-- ====================================
+        ADD NEW NOTE SECTION
+        ====================================
+        This section allows users to add a completely new note
+        Form sends data to the "/" route using POST method
+   -->
+   <h1>Add Note</h1>
+   <form action="/" method="post">
+      
+      <!-- ====================================
+           HIDDEN INPUT - NOTE ID FOR NEW NOTE
+           ====================================
+           For new notes, this field remains empty
+           It's included for form structure consistency
+      -->
+      <input type="number" style="display: none;"
+             name="noteId">
+      
+      <!-- ====================================
+           TEXTAREA - NEW NOTE CONTENT
+           ====================================
+           Empty textarea where user types new note content
+           name="noteContent" - field name sent to server
+           When user submits, this value is sent to app.js POST "/" route
+      -->
+      <textarea type="text" rows="6" cols="30"
+                placeholder="Type Here..."
+                name="noteContent"></textarea>
+      
+      <!-- Submit button to add the new note -->
+      <br>
+      <button type="submit">Add</button>
+   </form>
+
+</body>
+
+</html>
+
+<!-- ====================================
+     TEMPLATE FLOW EXPLANATION
+     ====================================
+     1. PAGE LOAD (GET /):
+        - app.js sends the notes array as 'data' to this template
+        - data.forEach() loop displays each note in the notes array
+        - Two forms are created for each note: Update and Delete
+     
+     2. USER UPDATES A NOTE:
+        - User edits the textarea content
+        - Clicks "Update" button
+        - Form POSTs to "/update" with noteId and updated noteContent
+        - Server finds the note by noteId and updates its content
+        - Page re-renders showing the updated note
+     
+     3. USER DELETES A NOTE:
+        - User clicks the X button
+        - Form POSTs to "/delete" with the noteId
+        - Server removes the note from the array
+        - Page re-renders without the deleted note
+     
+     4. USER ADDS NEW NOTE:
+        - User types in the "Add Note" textarea
+        - Clicks "Add" button
+        - Form POSTs to "/" with the noteContent
+        - Server creates new note with new noteId
+        - Page re-renders with the new note added
+-->
